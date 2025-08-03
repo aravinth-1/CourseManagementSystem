@@ -1,0 +1,244 @@
+import java.sql.*;
+import java.io.*;
+public class CourseFile {
+   static Connection conn;
+   static Statement stmt;
+   static ResultSet rs;
+   DataInputStream dis=new DataInputStream(System.in);
+   int ch;
+   String choice;
+   String cid,cname;
+   public Prg6()
+   {
+    try
+    {
+  Class.forName("com.mysql.jdbc.Driver");
+  conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/mce","root","Aravinth");
+  stmt=conn.createStatement();      
+    }
+    catch(Exception e)
+    {
+ System.out.println("Error:"+e.getMessage());
+    }
+    
+   }
+   public void MultipleChoice()
+   {
+       System.out.println("Course Details");
+       System.out.println("**************");
+       System.out.println("1.Insert");
+       System.out.println("2.Display");
+       System.out.println("3.Update");
+       System.out.println("4.Delete");
+       System.out.println("5.Exit");
+       try{
+       System.out.println("Enter Your Choice:");
+       ch=Integer.parseInt(dis.readLine());
+       if(ch==1)
+       {
+        System.out.println("Insert"); 
+        dataInsertion();
+        System.out.println("Do you want to continue yes/no:");
+        choice=dis.readLine();
+        if(choice.equals("yes") || choice.equals("Yes"))
+        {
+        System.out.println("Call Insert Function");
+        dataInsertion();
+        }
+        else
+        {
+        MultipleChoice();
+        }
+       }
+       else if(ch==2)
+       {
+           System.out.println("Display");
+           dataDisplay();
+           System.out.println("Do you want to continue yes/no:");
+        choice=dis.readLine();
+        if(choice.equals("yes") || choice.equals("Yes"))
+        {
+        System.out.println("Call Display Function");
+        dataDisplay();
+        }
+        else
+        {
+        MultipleChoice();
+        }
+       }
+       else if(ch==3)
+       {
+           System.out.println("Update");
+           dataUpdation();
+           System.out.println("Do you want to continue yes/no:");
+        choice=dis.readLine();
+        if(choice.equals("yes") || choice.equals("Yes"))
+        {
+        System.out.println("Call Display Function");
+        dataUpdation();
+        }
+        else
+        {
+        MultipleChoice();
+        }
+       }
+       else if(ch==4)
+       {
+           System.out.println("Delete");
+           dataDeletion();
+           System.out.println("Do you want to continue yes/no:");
+        choice=dis.readLine();
+        if(choice.equals("yes") || choice.equals("Yes"))
+        {
+        System.out.println("Call Display Function");
+        dataDeletion();
+        }
+        else
+        {
+        MultipleChoice();
+        }
+       }
+       else if(ch==5)
+       {
+           System.exit(0);
+       }
+       else
+       {
+           System.out.println("Wrong Choice");
+           MultipleChoice();
+       }
+       }
+       catch(Exception e)
+       {
+           System.out.println(e.getMessage());
+       }
+   }
+   public void dataInsertion()
+   {
+    System.out.println("Insert Data");
+    System.out.println("************");
+    try
+    {
+    System.out.println("Enter Course Id:");
+    cid=dis.readLine();
+    System.out.println("Enter Course Name:");
+    cname=dis.readLine();
+String squery="select * from tbl_course "
+        + "where cid='"+cid+"' and cname='"+cname+"'";
+System.out.println(squery);
+rs=stmt.executeQuery(squery);
+if(rs.next())
+{
+    System.out.println("Already Exists");
+}
+else
+{
+String iquery="insert into tbl_course(cid,cname) "
+        + "values('"+cid+"','"+cname+"') "    ;
+int res1=stmt.executeUpdate(iquery);
+  if(res1>0)
+  {
+      System.out.println("Inserted");
+  }
+  else
+  {
+      System.out.println("Not Inserted");
+  }
+}
+
+    }
+    catch(Exception e)
+    {
+   System.out.println("Error:"+e.getMessage());
+    }
+    
+   }
+   public void dataDisplay()
+   {
+    System.out.println("Display Data");
+    System.out.println("************");
+    try{
+String squery="select * from tbl_course";
+rs=stmt.executeQuery(squery);
+System.out.println("Id\t\tCid\t\tCname");
+while(rs.next())
+{
+System.out.println(rs.getInt(1)+"\t\t"+rs.getString(2)+"\t\t"+rs.getString(3));
+}
+
+    }
+    catch(Exception e)
+    {
+  System.out.println(e.getMessage())      ;
+    }
+   }
+   
+   public void dataUpdation()
+   {
+    System.out.println("Update Data");
+    System.out.println("************");
+    dataDisplay();
+    try
+    {
+    System.out.println("Enter Course Id to Update:");
+    cid=dis.readLine();
+    System.out.println("Enter New Course Name:");
+    cname=dis.readLine();
+String squery="update tbl_course "
+        + "set cname='"+cname+"' where cid='"+cid+"'";
+    int res1=stmt.executeUpdate(squery);
+    if(res1>0)
+    {
+      System.out.println("Updated");
+    }
+    else
+    {
+      System.out.println("Not Updated");
+    }
+
+
+    }
+    catch(Exception e)
+    {
+   System.out.println("Error:"+e.getMessage());
+    }
+    
+   }
+   public void dataDeletion()
+   {
+    System.out.println("Delete Data");
+    System.out.println("************");
+    dataDisplay();
+    try
+    {
+    System.out.println("Enter Course Id to Delete:");
+    cid=dis.readLine();
+    
+String squery="delete from tbl_course "
+        + "where cid='"+cid+"'";
+    int res1=stmt.executeUpdate(squery);
+    if(res1>0)
+    {
+      System.out.println("Deleted");
+      dataDisplay();
+    }
+    else
+    {
+      System.out.println("Not Deleted");
+    }
+
+
+    }
+    catch(Exception e)
+    {
+   System.out.println("Error:"+e.getMessage());
+    }
+    
+   }
+   
+   public static void main(String args[])
+   {
+   Prg6 obj=new Prg6();
+   obj.MultipleChoice();
+   }
+}
